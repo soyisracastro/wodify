@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Settings, Plus, History, User, Play } from "lucide-react"
 import Link from "next/link"
+import ThemeToggle from "@/components/ThemeToggle"
 
 interface WodSection {
   title: string
@@ -86,9 +87,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b">
+      <header className="bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
@@ -96,16 +97,17 @@ export default function Dashboard() {
                 <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">W</span>
                 </div>
-                <span className="text-xl font-bold">WODify</span>
+                <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">WODify</span>
               </Link>
-              <span className="text-gray-600 dark:text-gray-300">Dashboard</span>
+              <span className="text-neutral-500 dark:text-neutral-400">Dashboard</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600 dark:text-gray-300">
+              <span className="text-sm text-neutral-600 dark:text-neutral-300">
                 Welcome, {session.user?.name}
               </span>
+              <ThemeToggle />
               <Link href="/auth/signout">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   Sign Out
                 </Button>
               </Link>
@@ -120,7 +122,7 @@ export default function Dashboard() {
           <Button
             onClick={generateWod}
             disabled={isLoading}
-            className="h-20 flex flex-col items-center justify-center space-y-2"
+            className="h-20 flex flex-col items-center justify-center space-y-2 bg-red-500 hover:bg-red-600 text-white border-0"
           >
             {isLoading ? (
               <Loader2 className="h-6 w-6 animate-spin" />
@@ -131,28 +133,28 @@ export default function Dashboard() {
           </Button>
 
           <Link href="/dashboard/profile">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
               <User className="h-6 w-6" />
               <span>Profile</span>
             </Button>
           </Link>
 
           <Link href="/dashboard/history">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
               <History className="h-6 w-6" />
               <span>History</span>
             </Button>
           </Link>
 
           <Link href="/dashboard/presets">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
               <Play className="h-6 w-6" />
               <span>Browse Presets</span>
             </Button>
           </Link>
 
           <Link href="/dashboard/settings">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
               <Settings className="h-6 w-6" />
               <span>Settings</span>
             </Button>

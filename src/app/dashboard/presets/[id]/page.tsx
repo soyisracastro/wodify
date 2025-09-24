@@ -151,9 +151,9 @@ export default function PresetDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b">
+      <header className="bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
@@ -161,14 +161,14 @@ export default function PresetDetailPage() {
                 <ArrowLeft className="h-5 w-5" />
                 <span>Back to Presets</span>
               </Link>
-              <span className="text-xl font-bold">{preset.title}</span>
+              <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{preset.title}</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600 dark:text-gray-300">
+              <span className="text-sm text-neutral-600 dark:text-neutral-300">
                 Welcome, {session.user?.name}
               </span>
               <Link href="/auth/signout">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   Sign Out
                 </Button>
               </Link>
