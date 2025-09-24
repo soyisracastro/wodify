@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Settings, Plus, History, User, Play } from "lucide-react"
+import { Loader2, Settings, Plus, History, User, Play, Crown, Zap, Save, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import ThemeToggle from "@/components/ThemeToggle"
 
@@ -29,18 +29,110 @@ interface Wod {
   coolDown: WodSection
 }
 
+interface SubscriptionStatus {
+  tier: 'FREE' | 'PREMIUM'
+  isActive: boolean
+  remainingWods: number | 'unlimited'
+  dailyLimit: number | 'unlimited'
+}
+
 export default function Dashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [wod, setWod] = useState<Wod | null>(null)
+  const [currentWodId, setCurrentWodId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isCompleting, setIsCompleting] = useState(false)
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth/signin")
     }
   }, [status, router])
+
+  useEffect(() => {
+    if (session) {
+      fetchSubscriptionStatus()
+    }
+  }, [session])
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch("/api/subscription/status")
+      if (response.ok) {
+        const data = await response.json()
+        setSubscription(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription status:", error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
+
+  const saveWod = async () => {
+    if (!currentWodId) return
+
+    setIsSaving(true)
+    try {
+      const response = await fetch("/api/wod/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          wodId: currentWodId,
+          title: wod?.title,
+        }),
+      })
+
+      if (response.ok) {
+        setError("")
+        // Could show a success message here
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || "Failed to save WOD")
+      }
+    } catch (error) {
+      setError("An error occurred while saving the WOD")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const completeWod = async () => {
+    if (!currentWodId) return
+
+    setIsCompleting(true)
+    try {
+      const response = await fetch("/api/wod/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          wodId: currentWodId,
+          // Could add duration, notes, etc. in a future enhancement
+        }),
+      })
+
+      if (response.ok) {
+        setError("")
+        // Could show a success message here
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || "Failed to mark WOD as completed")
+      }
+    } catch (error) {
+      setError("An error occurred while completing the WOD")
+    } finally {
+      setIsCompleting(false)
+    }
+  }
 
   const generateWod = async () => {
     setIsLoading(true)
@@ -63,6 +155,9 @@ export default function Dashboard() {
       if (response.ok) {
         const newWod = await response.json()
         setWod(newWod)
+        setCurrentWodId(newWod.id)
+        // Refresh subscription status after successful generation
+        await fetchSubscriptionStatus()
       } else {
         const errorData = await response.json()
         setError(errorData.error || "Failed to generate WOD")
@@ -117,12 +212,80 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Subscription Status */}
+        {!subscriptionLoading && subscription && (
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  {subscription.tier === 'PREMIUM' ? (
+                    <Crown className="h-6 w-6 text-yellow-500" />
+                  ) : (
+                    <Zap className="h-6 w-6 text-blue-500" />
+                  )}
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {subscription.tier === 'PREMIUM' ? 'Premium' : 'Free'} Plan
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {subscription.tier === 'PREMIUM'
+                        ? 'Unlimited AI-generated WODs'
+                        : `Daily limit: ${subscription.remainingWods === 'unlimited' ? 'unlimited' : `${subscription.remainingWods}/${subscription.dailyLimit}`} WODs remaining`
+                      }
+                    </p>
+                  </div>
+                </div>
+                {subscription.tier === 'FREE' && (
+                  <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade to Premium
+                  </Button>
+                )}
+              </div>
+
+              {/* Premium Actions */}
+              {subscription?.tier === 'PREMIUM' && currentWodId && (
+                <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    onClick={saveWod}
+                    disabled={isSaving}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    {isSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    Save Workout
+                  </Button>
+                  <Button
+                    onClick={completeWod}
+                    disabled={isCompleting}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    {isCompleting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4" />
+                    )}
+                    Mark Complete
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Button
             onClick={generateWod}
-            disabled={isLoading}
-            className="h-20 flex flex-col items-center justify-center space-y-2 bg-red-500 hover:bg-red-600 text-white border-0"
+            disabled={isLoading || (subscription?.tier === 'FREE' && subscription.remainingWods !== 'unlimited' && subscription.remainingWods === 0)}
+            className="h-20 flex flex-col items-center justify-center space-y-2 bg-red-500 hover:bg-red-600 text-white border-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <Loader2 className="h-6 w-6 animate-spin" />
@@ -130,6 +293,9 @@ export default function Dashboard() {
               <Plus className="h-6 w-6" />
             )}
             <span>Generate WOD</span>
+            {subscription && subscription.tier === 'FREE' && subscription.remainingWods === 0 && (
+              <span className="text-xs opacity-75">Limit reached</span>
+            )}
           </Button>
 
           <Link href="/dashboard/profile">
@@ -139,12 +305,14 @@ export default function Dashboard() {
             </Button>
           </Link>
 
-          <Link href="/dashboard/history">
-            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
-              <History className="h-6 w-6" />
-              <span>History</span>
-            </Button>
-          </Link>
+          {subscription?.tier === 'PREMIUM' && (
+            <Link href="/dashboard/history">
+              <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+                <History className="h-6 w-6" />
+                <span>History</span>
+              </Button>
+            </Link>
+          )}
 
           <Link href="/dashboard/presets">
             <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">

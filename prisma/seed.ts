@@ -306,6 +306,26 @@ async function main() {
     console.log(`Created WOD: ${wod.title}`)
   }
 
+  // Create FREE subscriptions for all existing users
+  console.log('Creating FREE subscriptions for existing users...')
+  const users = await prisma.user.findMany()
+  for (const user of users) {
+    const existingSubscription = await prisma.subscription.findUnique({
+      where: { userId: user.id }
+    })
+
+    if (!existingSubscription) {
+      await prisma.subscription.create({
+        data: {
+          userId: user.id,
+          tier: 'FREE',
+          isActive: true,
+        }
+      })
+      console.log(`Created FREE subscription for user: ${user.email}`)
+    }
+  }
+
   console.log('Seeding finished.')
 }
 

@@ -3,6 +3,7 @@ import OpenAI from "openai"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { canGenerateWod, incrementTodayUsage } from "@/lib/subscription"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -16,6 +17,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
+      )
+    }
+
+    // Check if user can generate WOD
+    const canGenerate = await canGenerateWod(session.user.id)
+    if (!canGenerate.allowed) {
+      return NextResponse.json(
+        { error: canGenerate.reason || "Cannot generate WOD" },
+        { status: 429 } // Too Many Requests
       )
     }
 
@@ -160,6 +170,9 @@ Respond with ONLY the JSON object, no additional text.`
       },
     })
 
+    // Increment daily usage counter
+    await incrementTodayUsage(session.user.id)
+
     // Transform the data to match the expected format
     const transformedWod = {
       title: savedWod.title,
@@ -186,7 +199,10 @@ Respond with ONLY the JSON object, no additional text.`
       },
     }
 
-    return NextResponse.json(transformedWod)
+    return NextResponse.json({
+      ...transformedWod,
+      id: savedWod.id,
+    })
   } catch (error) {
     console.error("WOD generation error:", error)
     return NextResponse.json(

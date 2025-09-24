@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2, ArrowLeft, Crown, Zap } from "lucide-react"
 import Link from "next/link"
 
 export default function ProfilePage() {
@@ -17,12 +17,19 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [subscription, setSubscription] = useState<{
+    tier: 'FREE' | 'PREMIUM'
+    isActive: boolean
+    remainingWods: number | 'unlimited'
+    dailyLimit: number | 'unlimited'
+  } | null>(null)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
 
   const [formData, setFormData] = useState({
     name: "",
-    level: "BEGINNER" as const,
-    location: "GYM" as const,
-    equipment: "FULL" as const,
+    level: "BEGINNER",
+    location: "GYM",
+    equipment: "FULL",
     injuries: "",
   })
 
@@ -41,8 +48,23 @@ export default function ProfilePage() {
         equipment: session.user.equipment || "FULL",
         injuries: "", // This would come from user profile data
       })
+      fetchSubscriptionStatus()
     }
   }, [session])
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch("/api/subscription/status")
+      if (response.ok) {
+        const data = await response.json()
+        setSubscription(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription status:", error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -110,7 +132,44 @@ export default function ProfilePage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Subscription Status */}
+          {!subscriptionLoading && subscription && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {subscription.tier === 'PREMIUM' ? (
+                    <Crown className="h-5 w-5 text-yellow-500" />
+                  ) : (
+                    <Zap className="h-5 w-5 text-blue-500" />
+                  )}
+                  Subscription Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {subscription.tier === 'PREMIUM' ? 'Premium' : 'Free'} Plan
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {subscription.tier === 'PREMIUM'
+                        ? 'Unlimited AI-generated WODs'
+                        : `Daily limit: ${subscription.remainingWods === 'unlimited' ? 'unlimited' : `${subscription.remainingWods}/${subscription.dailyLimit}`} WODs remaining`
+                      }
+                    </p>
+                  </div>
+                  {subscription.tier === 'FREE' && (
+                    <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                      <Crown className="h-4 w-4 mr-2" />
+                      Upgrade to Premium
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Profile Settings</CardTitle>
