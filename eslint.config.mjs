@@ -10,7 +10,6 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
       "**/node_modules/**",
@@ -19,11 +18,12 @@ const eslintConfig = [
       "**/build/**",
       "**/dist/**",
       "next-env.d.ts",
-      "**/*.js",
-      "**/*.d.ts",
       "**/*.map",
       "**/*.tsbuildinfo",
     ],
+  },
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
     rules: {
       // Allow unused variables that start with underscore
       "@typescript-eslint/no-unused-vars": [
