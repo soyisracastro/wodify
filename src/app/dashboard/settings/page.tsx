@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Switch } from "@/components/ui/switch"
-import { Loader2, ArrowLeft, Bell, Moon, Sun, Shield, Settings as SettingsIcon } from "lucide-react"
+import { Loader2, ArrowLeft, Bell, Sun, Shield, Settings as SettingsIcon } from "lucide-react"
 import Link from "next/link"
 import ThemeToggle from "@/components/ThemeToggle"
 
@@ -66,7 +66,7 @@ export default function SettingsPage() {
       localStorage.setItem('wodify-settings', JSON.stringify(settings))
 
       setSuccess("Settings saved successfully!")
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while saving your settings")
     } finally {
       setIsLoading(false)

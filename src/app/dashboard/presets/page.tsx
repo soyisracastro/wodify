@@ -59,7 +59,7 @@ export default function PresetsPage() {
       } else {
         setError("Failed to load preset workouts")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while loading presets")
     } finally {
       setIsLoading(false)

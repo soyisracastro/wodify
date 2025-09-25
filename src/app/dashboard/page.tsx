@@ -97,7 +97,7 @@ export default function Dashboard() {
         const errorData = await response.json()
         setError(errorData.error || "Failed to save WOD")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while saving the WOD")
     } finally {
       setIsSaving(false)
@@ -127,7 +127,7 @@ export default function Dashboard() {
         const errorData = await response.json()
         setError(errorData.error || "Failed to mark WOD as completed")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while completing the WOD")
     } finally {
       setIsCompleting(false)
@@ -162,7 +162,7 @@ export default function Dashboard() {
         const errorData = await response.json()
         setError(errorData.error || "Failed to generate WOD")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while generating the WOD")
     } finally {
       setIsLoading(false)

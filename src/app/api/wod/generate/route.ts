@@ -81,7 +81,7 @@ Make sure the WOD is:
 - Has clear, specific instructions
 - Is challenging but achievable
 
-Respond with ONLY the JSON object, no additional text.`
+Respond with ONLY the JSON object, no additional text, no markdown formatting, no code blocks.`
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -110,14 +110,45 @@ Respond with ONLY the JSON object, no additional text.`
 
     // Parse the JSON response
     let wodData
+    let cleanResponseText = responseText.trim()
+
+    // Clean the response text by removing markdown code blocks
+    if (cleanResponseText.startsWith('```json')) {
+      cleanResponseText = cleanResponseText.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+    } else if (cleanResponseText.startsWith('```')) {
+      cleanResponseText = cleanResponseText.replace(/^```\s*/, '').replace(/\s*```$/, '')
+    }
+
     try {
-      wodData = JSON.parse(responseText)
-    } catch (parseError) {
+      wodData = JSON.parse(cleanResponseText)
+    } catch (_parseError) {
       console.error("Failed to parse OpenAI response:", responseText)
+      console.error("Cleaned response text:", cleanResponseText)
       return NextResponse.json(
         { error: "Invalid response format from AI" },
         { status: 500 }
       )
+    }
+
+    // Validate the parsed JSON structure
+    if (!wodData || typeof wodData !== 'object') {
+      console.error("Invalid WOD data structure:", wodData)
+      return NextResponse.json(
+        { error: "Invalid WOD data structure from AI" },
+        { status: 500 }
+      )
+    }
+
+    // Check for required fields
+    const requiredFields = ['title', 'warmUp', 'strengthSkill', 'metcon', 'coolDown']
+    for (const field of requiredFields) {
+      if (!wodData[field]) {
+        console.error(`Missing required field: ${field}`, wodData)
+        return NextResponse.json(
+          { error: `Invalid WOD data: missing ${field}` },
+          { status: 500 }
+        )
+      }
     }
 
     // Save the generated WOD to database

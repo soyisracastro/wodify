@@ -68,7 +68,7 @@ export default function HistoryPage() {
       } else {
         setError("Failed to load workout history")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while loading history")
     } finally {
       setIsLoading(false)

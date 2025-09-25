@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { wodId, title } = await request.json()
+    const { wodId } = await request.json()
 
     if (!wodId) {
       return NextResponse.json(

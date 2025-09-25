@@ -42,7 +42,7 @@ export default function SignIn() {
         router.push("/dashboard")
         router.refresh()
       }
-    } catch (error) {
+    } catch (_error) {
       console.log("SignIn: Exception occurred, setting error")
       setError("An error occurred. Please try again.")
     } finally {

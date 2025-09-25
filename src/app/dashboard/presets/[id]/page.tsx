@@ -62,7 +62,7 @@ export default function PresetDetailPage() {
       } else {
         setError("Failed to load workout details")
       }
-    } catch (error) {
+    } catch (_error) {
       setError("An error occurred while loading workout")
     } finally {
       setIsLoading(false)
