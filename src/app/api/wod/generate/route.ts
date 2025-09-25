@@ -177,25 +177,25 @@ Respond with ONLY the JSON object, no additional text.`
     const transformedWod = {
       title: savedWod.title,
       warmUp: {
-        title: savedWod.sections.find((s: any) => s.type === "WARMUP")?.title || "Warm-up",
-        duration: savedWod.sections.find((s: any) => s.type === "WARMUP")?.duration,
-        parts: savedWod.sections.find((s: any) => s.type === "WARMUP")?.movements || [],
+        title: savedWod.sections.find((s) => s.type === "WARMUP")?.title || "Warm-up",
+        duration: savedWod.sections.find((s) => s.type === "WARMUP")?.duration,
+        parts: savedWod.sections.find((s) => s.type === "WARMUP")?.movements || [],
       },
       strengthSkill: {
-        title: savedWod.sections.find((s: any) => s.type === "STRENGTH")?.title || "Strength",
-        details: savedWod.sections.find((s: any) => s.type === "STRENGTH")?.movements || [],
+        title: savedWod.sections.find((s) => s.type === "STRENGTH")?.title || "Strength",
+        details: savedWod.sections.find((s) => s.type === "STRENGTH")?.movements || [],
       },
       metcon: {
-        title: savedWod.sections.find((s: any) => s.type === "METCON")?.title || "Metcon",
+        title: savedWod.sections.find((s) => s.type === "METCON")?.title || "Metcon",
         type: "For Time", // Default type
-        description: savedWod.sections.find((s: any) => s.type === "METCON")?.description,
-        movements: savedWod.sections.find((s: any) => s.type === "METCON")?.movements || [],
-        notes: savedWod.sections.find((s: any) => s.type === "METCON")?.notes,
+        description: savedWod.sections.find((s) => s.type === "METCON")?.description,
+        movements: savedWod.sections.find((s) => s.type === "METCON")?.movements || [],
+        notes: savedWod.sections.find((s) => s.type === "METCON")?.notes,
       },
       coolDown: {
-        title: savedWod.sections.find((s: any) => s.type === "COOLDOWN")?.title || "Cool-down",
-        duration: savedWod.sections.find((s: any) => s.type === "COOLDOWN")?.duration,
-        parts: savedWod.sections.find((s: any) => s.type === "COOLDOWN")?.movements || [],
+        title: savedWod.sections.find((s) => s.type === "COOLDOWN")?.title || "Cool-down",
+        duration: savedWod.sections.find((s) => s.type === "COOLDOWN")?.duration,
+        parts: savedWod.sections.find((s) => s.type === "COOLDOWN")?.movements || [],
       },
     }
 

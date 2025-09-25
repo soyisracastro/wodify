@@ -40,7 +40,7 @@ export default function SettingsPage() {
     const savedSettings = localStorage.getItem('wodify-settings')
     if (savedSettings) {
       try {
-        setSettings({ ...settings, ...JSON.parse(savedSettings) })
+        setSettings((prevSettings) => ({ ...prevSettings, ...JSON.parse(savedSettings) }))
       } catch (error) {
         console.error('Failed to parse saved settings:', error)
       }

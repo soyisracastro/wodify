@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function Home() {
   return (
@@ -35,7 +35,7 @@ export default function Home() {
             <span className="text-red-500 block">CrossFit WOD</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Create personalized workouts with AI. Whether you're at a fully-equipped box or training at home,
+            Create personalized workouts with AI. Whether you&apos;re at a fully-equipped box or training at home,
             get the perfect WOD for your fitness level and goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

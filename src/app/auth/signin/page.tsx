@@ -22,6 +22,9 @@ export default function SignIn() {
     setIsLoading(true)
     setError("")
 
+    // Debug: Log to verify error state usage
+    console.log("SignIn: Starting form submission")
+
     try {
       const result = await signIn("credentials", {
         email,
@@ -30,14 +33,17 @@ export default function SignIn() {
       })
 
       if (result?.error) {
+        console.log("SignIn: Authentication failed, setting error")
         setError("Invalid credentials")
       } else {
+        console.log("SignIn: Authentication successful, redirecting")
         // Refresh session and redirect
         await getSession()
         router.push("/dashboard")
         router.refresh()
       }
     } catch (error) {
+      console.log("SignIn: Exception occurred, setting error")
       setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
@@ -95,7 +101,7 @@ export default function SignIn() {
               Sign in
             </Button>
             <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/auth/signup" className="font-medium text-primary hover:underline">
                 Sign up
               </Link>
