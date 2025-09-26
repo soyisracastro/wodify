@@ -14,7 +14,7 @@ datasource db {
 // NextAuth.js required models
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            String  @db.Uuid
   type              String
   provider          String
   providerAccountId String
@@ -34,13 +34,13 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.Uuid
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @db.Uuid @default(uuid())
   name          String?
   email         String    @unique
   emailVerified DateTime?
@@ -94,7 +94,7 @@ model PresetWod {
 model GeneratedWod {
   id          String   @id @default(cuid())
   title       String
-  userId      String
+  userId      String   @db.Uuid
   isCustom    Boolean  @default(false)
   parameters  Json     // Parameters used for generation
   createdAt   DateTime @default(now())
@@ -130,7 +130,7 @@ model WodSection {
 
 model UserProgress {
   id              String   @id @default(cuid())
-  userId          String
+  userId          String   @db.Uuid
   generatedWodId  String
   completedAt     DateTime @default(now())
   duration        Int?     // Duration in minutes
@@ -148,7 +148,7 @@ model UserProgress {
 
 model WodFavorite {
   id         String @id @default(cuid())
-  userId     String
+  userId     String @db.Uuid
   presetWodId String
   createdAt  DateTime @default(now())
 
@@ -207,7 +207,7 @@ enum SubscriptionTier {
 // Application specific models
 model Subscription {
   id          String   @id @default(cuid())
-  userId      String   @unique
+  userId      String   @unique @db.Uuid
   tier        SubscriptionTier @default(FREE)
   isActive    Boolean  @default(true)
   startedAt   DateTime @default(now())
@@ -222,7 +222,7 @@ model Subscription {
 
 model DailyUsage {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String   @db.Uuid
   date      DateTime @db.Date // Store date only
   wodCount  Int      @default(0)
   createdAt DateTime @default(now())
